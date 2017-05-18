@@ -1,11 +1,11 @@
 # coding=utf-8
-
+from __future__ import unicode_literals
 import os
 import sys
 import platform
 
 try:
-    import configparser as configparser
+    import ConfigParser as configparser
 except ImportError:
     import configparser
 
@@ -52,7 +52,7 @@ def print_config():
         return
     c.read(CONFIG_FILE_PATH)
     for i in __writeable__:
-        print(('{0}={1}'.format(i, c.get('bgmi', i))))
+        print('{0}={1}'.format(i, c.get('bgmi', i)))
 
 
 def write_default_config():
@@ -78,7 +78,7 @@ def write_config(config=None, value=None):
         c.add_section('bgmi')
 
     if config is not None and config not in __writeable__:
-        print(('{0} does not exist or not writeable'.format(config)))
+        print('{0} does not exist or not writeable'.format(config))
         exit(1)
 
     for i in __writeable__:
@@ -90,7 +90,7 @@ def write_config(config=None, value=None):
             print_config()
             return
         elif value is None:
-            print(('{0}={1}'.format(config, c.get('bgmi', config))))
+            print('{0}={1}'.format(config, c.get('bgmi', config)))
             return
         else:
             if config in __writeable__:

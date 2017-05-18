@@ -65,14 +65,14 @@ def filter_(ret):
         followed_filter_obj.save()
 
     if subtitle is not None:
-        subtitle = [s.strip() for s in subtitle.split(',')]
+        subtitle = map(lambda s: s.strip(), subtitle.split(','))
 
-        subtitle = [s['id'] for s in Subtitle.get_subtitle_by_name(subtitle)]
+        subtitle = map(lambda s: s['id'], Subtitle.get_subtitle_by_name(subtitle))
 
         subtitle_list = [s.split('.')[0] for s in bangumi_obj.subtitle_group.split(', ')
                          if '.' in s]
         subtitle_list.extend(bangumi_obj.subtitle_group.split(', '))
-        subtitle = [s for s in subtitle if True if s in subtitle_list else False]
+        subtitle = filter(lambda s: True if s in subtitle_list else False, subtitle)
         subtitle = ', '.join(subtitle)
         followed_filter_obj.subtitle = subtitle
 
@@ -87,9 +87,11 @@ def filter_(ret):
 
     followed_filter_obj.save()
 
-    print_info('Usable subtitle group: {0}'.format(', '.join([s['name'] for s in Subtitle.get_subtitle(bangumi_obj.subtitle_group.split(', '))]))
+    print_info('Usable subtitle group: {0}'.format(', '.join(map(lambda s: s['name'],
+                                                   Subtitle.get_subtitle(bangumi_obj.subtitle_group.split(', ')))))
                if bangumi_obj.subtitle_group else 'None')
-    print_success('Added subtitle group: {0}'.format(', '.join([s['name'] for s in Subtitle.get_subtitle(followed_filter_obj.subtitle.split(', '))])
+    print_success('Added subtitle group: {0}'.format(', '.join(map(lambda s: s['name'],
+                                                     Subtitle.get_subtitle(followed_filter_obj.subtitle.split(', '))))
                   if followed_filter_obj.subtitle else 'None'))
     print_success('Include keywords: {0}'.format(followed_filter_obj.include))
     print_success('Exclude keywords: {0}'.format(followed_filter_obj.exclude))
@@ -156,7 +158,7 @@ def update(ret):
 
         episode, all_episode_data = get_maximum_episode(bangumi=bangumi_obj, ignore_old_row=ignore)
         if episode.get('episode') > subscribe['episode']:
-            episode_range = list(range(subscribe['episode'] + 1, episode.get('episode', 0)))
+            episode_range = range(subscribe['episode'] + 1, episode.get('episode', 0))
             print_success('%s updated, episode: %d' % (subscribe['bangumi_name'], episode['episode']))
             followed_obj.episode = episode['episode']
             followed_obj.status = STATUS_UPDATED

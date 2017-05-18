@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from __future__ import print_function, unicode_literals
 import os
 import sys
 import sqlite3
@@ -11,7 +11,7 @@ if IS_PYTHON3:
     _unicode = str
 else:
     input = raw_input
-    _unicode = str
+    _unicode = unicode
 
 
 # bangumi subscription and download status
@@ -36,7 +36,7 @@ def make_dicts(cursor, row):
 
 
 class FalseType(type):
-    def __bool__(self):
+    def __nonzero__(self):
         return False
 
 
@@ -204,7 +204,7 @@ class DB(object):
             v = self.__dict__.get(i, '')
             if isinstance(v, str):
                 if sys.version_info.major < 3:
-                    v = str(v.decode('utf-8'))
+                    v = unicode(v.decode('utf-8'))
                 else:
                     v = str(v)
                 self.__dict__[i] = v
@@ -238,13 +238,13 @@ class DB(object):
             self.__nonzero = False
         else:
             self.__nonzero = True
-            for k, v in list(data.items()):
+            for k, v in data.items():
                 setattr(self, k, v)
 
     def __bool__(self):
         return self.__nonzero
 
-    def __bool__(self):
+    def __nonzero__(self):
         return self.__nonzero
 
     def select(self, fields=None, condition=None, one=False, join=None):
@@ -423,7 +423,7 @@ class Followed(DB):
         sql = DB._make_sql('delete', table=Followed.table, condition=k)
 
         if not batch and sql.endswith('WHERE 1'):
-            if not eval(input('[+] are you sure want to CLEAR ALL THE BANGUMI? (y/N): ')) == 'y':
+            if not input('[+] are you sure want to CLEAR ALL THE BANGUMI? (y/N): ') == 'y':
                 return False
 
         cur.execute(sql, v)

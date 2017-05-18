@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from __future__ import print_function, unicode_literals
 
 import os
 import time
@@ -21,7 +21,7 @@ from bgmi.utils.utils import print_error, print_warning, print_info, \
 if bgmi.config.IS_PYTHON3:
     _unicode = str
 else:
-    _unicode = str
+    _unicode = unicode
 
 
 def bangumi_calendar(force_update=False, today=False, followed=False, save=True):
@@ -48,7 +48,7 @@ def bangumi_calendar(force_update=False, today=False, followed=False, save=True)
             weekly_list_followed = Bangumi.get_all_bangumi(status=STATUS_FOLLOWED)
             weekly_list_updated = Bangumi.get_all_bangumi(status=STATUS_UPDATED)
             weekly_list = defaultdict(list)
-            for k, v in chain(list(weekly_list_followed.items()), list(weekly_list_updated.items())):
+            for k, v in chain(weekly_list_followed.items(), weekly_list_updated.items()):
                 weekly_list[k].extend(v)
         else:
             weekly_list = Bangumi.get_all_bangumi()
@@ -116,7 +116,7 @@ def bangumi_calendar(force_update=False, today=False, followed=False, save=True)
                 if followed:
                     if i > 0:
                         print(' ' * 5, end='')
-                    f = [s['name'] for s in Subtitle.get_subtitle(bangumi['subtitle_group'].split(', '))]
+                    f = map(lambda s: s['name'], Subtitle.get_subtitle(bangumi['subtitle_group'].split(', ')))
                     print(bangumi['name'], ', '.join(f))
                 else:
                     print(' ' + bangumi['name'], ' ' * space_count, end='')
@@ -158,7 +158,7 @@ def parser_bangumi(data, group_by_weekday=True):
     '''match weekly bangumi list from data
     '''
 
-    ids = list([b['tag_id'] for b in data])
+    ids = list(map(lambda b: b['tag_id'], data))
     subtitle = get_response(TEAM_URL, 'POST', json={'tag_ids': ids})
     name = process_name(get_response(NAME_URL, 'POST', json={'_ids': ids}))
 
@@ -195,7 +195,7 @@ def fetch(save=False, group_by_weekday=True, status=False):
 
     if save:
         if group_by_weekday:
-            for i in list(result.values()):
+            for i in result.values():
                 for bangumi in i:
                     save_data(bangumi)
         else:
@@ -267,17 +267,19 @@ def fetch_episode(_id, name='', **kwargs):
         })
 
     if include:
-        include_list = [s.strip() for s in include.split(',')]
-        result = list([s for s in result if True if all([t in s['title'] for t in include_list]) else False])
+        include_list = map(lambda s: s.strip(), include.split(','))
+        result = list(filter(lambda s: True if all(map(lambda t: t in s['title'],
+                                                       include_list)) else False, result))
 
     if exclude:
-        exclude_list = [s.strip() for s in exclude.split(',')]
-        result = list([s for s in result if True if all([t not in s['title'] for t in exclude_list]) else False])
+        exclude_list = map(lambda s: s.strip(), exclude.split(','))
+        result = list(filter(lambda s: True if all(map(lambda t: t not in s['title'],
+                                                       exclude_list)) else False, result))
 
     if regex:
         try:
             match = re.compile(regex)
-            result = list([s for s in result if True if match.findall(s['title']) else False])
+            result = list(filter(lambda s: True if match.findall(s['title']) else False, result))
         except re.error:
             pass
 
