@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from __future__ import unicode_literals, print_function
 
 import os
 import re
@@ -15,7 +15,7 @@ from bgmi.models import Download, STATUS_DOWNLOADED, STATUS_NOT_DOWNLOAD, STATUS
 if bgmi.config.IS_PYTHON3:
     from xmlrpc.client import ServerProxy, _Method
 else:
-    from xmlrpc.client import ServerProxy, _Method
+    from xmlrpclib import ServerProxy, _Method
 
 
 class _PatchedMethod(_Method):

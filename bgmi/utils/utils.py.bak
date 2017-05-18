@@ -1,5 +1,5 @@
 # coding=utf-8
-
+from __future__ import print_function, unicode_literals
 import os
 import time
 import platform
@@ -45,7 +45,7 @@ def indicator(f):
             if IS_PYTHON3:
                 func_name = f.__qualname__
             else:
-                func_name = f.__name__
+                func_name = f.func_name
             args = (indicator_map.get(func_name, '') + args[0], )
         return f(*args, **kwargs)
     return wrapper
@@ -57,9 +57,9 @@ def colorize(f):
         if IS_PYTHON3:
             func_name = f.__qualname__
         else:
-            func_name = f.__name__
+            func_name = f.func_name
         b, e = color_map.get(func_name, ''), COLOR_END if color_map.get(func_name) else ''
-        args = tuple([b + s + e for s in args])
+        args = tuple(map(lambda s: b + s + e, args))
         return f(*args, **kwargs)
     return wrapper
 
@@ -116,9 +116,9 @@ def unicodeize(data):
             return data
             # return bytes(str(data), 'latin-1').decode('utf-8')
     try:
-        return str(data.decode('utf-8'))
+        return unicode(data.decode('utf-8'))
     except (UnicodeEncodeError, UnicodeDecodeError):
-        return str(data.decode('gbk'))
+        return unicode(data.decode('gbk'))
     except (UnicodeEncodeError, UnicodeDecodeError):
         return data
 

@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+from __future__ import print_function, unicode_literals
 import os
 import json
 import datetime
@@ -107,7 +107,7 @@ class CalendarHandler(tornado.web.RequestHandler):
         cal.add('version', '2.0')
 
         weekday = datetime.datetime.now().weekday()
-        for i, k in enumerate(list(range(weekday, weekday + 7))):
+        for i, k in enumerate(range(weekday, weekday + 7)):
             if k % 7 in bangumi:
                 event = Event()
                 v = bangumi[k % 7]
@@ -137,7 +137,7 @@ class MainHandler(tornado.web.RequestHandler):
 
         data = Followed.get_all_followed(STATUS_NORMAL, STATUS_UPDATING,
                                          order='followed.updated_time', desc=True)
-        followed = [b['bangumi_name'] for b in data]
+        followed = map(lambda b: b['bangumi_name'], data)
         data = Followed.get_all_followed(STATUS_NORMAL, STATUS_UPDATING if not is_old else STATUS_END,
                                          order='followed.updated_time', desc=True)
         calendar = Bangumi.get_all_bangumi()
