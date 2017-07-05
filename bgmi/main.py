@@ -21,8 +21,8 @@ from bgmi.constants import *
 # Wrap sys.stdout into a StreamWriter to allow writing unicode.
 if bgmi.config.IS_PYTHON3:
     unicode = str
-    file_ = sys.stdout.buffer
-    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(file_)
+    # file_ = sys.stdout.buffer
+    # sys.stdout = codecs.getwriter(locale.getpreferredencoding())(file_)
 else:
     reload(sys)
     sys.setdefaultencoding('utf-8')
